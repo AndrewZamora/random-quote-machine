@@ -2,6 +2,7 @@ import React, { Component } from 'react'
 import './App.css';
 
 const getQuotes = async () => {
+  // Quotes come from this API https://quotesondesign.com/api/
   const response = await fetch('https://quotesondesign.com/wp-json/wp/v2/posts/?orderby=rand');
   const data = await response.json();
   return data;
@@ -19,10 +20,10 @@ class App extends Component {
     };
   }
   async componentDidMount() {
-    const allQuotes = await getQuotes();
+    const requestedQuotes = await getQuotes();
     this.setState({
-      quotes: allQuotes,
-      currentQuote: allQuotes[0]
+      quotes: requestedQuotes,
+      currentQuote: requestedQuotes[0]
     })
   }
   selectQuote = () => {
@@ -32,13 +33,10 @@ class App extends Component {
     });
   }
   createQuote = () => {
+    // This is a REACT way to render HTML String https://reactjs.org/docs/dom-elements.html#dangerouslysetinnerhtml
     return (<>
-      <div id="text">
-        {this.state.currentQuote.content.rendered}
-      </div>
-      <div id="author">
-        {this.state.currentQuote.title.rendered}
-      </div>
+      <div id="text" dangerouslySetInnerHTML={{ __html: this.state.currentQuote.content.rendered }} />
+      <div id="author" dangerouslySetInnerHTML={{ __html: this.state.currentQuote.title.rendered }} />
       <button id="new-quote" onClick={() => this.selectQuote()}>New Quote</button>
     </>);
   }
