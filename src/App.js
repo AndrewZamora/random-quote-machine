@@ -42,7 +42,8 @@ class App extends Component {
     this.authorRef = React.createRef();
   }
   async componentDidMount() {
-    const pageIds = await getPageIds('list of people by name');
+    const pageIds = await getPageIds('list of films');
+    console.log(await getPageIds('list of films'));
     const randomId = pageIds[randomNum(pageIds.length)];
     const names = await getNamesFromPage(randomId);
     const randomName = names[randomNum(names.length)];
@@ -76,11 +77,13 @@ class App extends Component {
     // )
   }
   render() {
+    const { currentQuote, currentAuthor } = this.state;
     return (
       <div className="App">
         <h1>Random Quote Machine</h1>
         <div id="quote-box">
-          {this.state.currentQuote.length > 0 && this.createQuote(this.state.currentQuote, this.state.currentAuthor)}
+          <p>{currentQuote}</p>
+          <p>{`- ${currentAuthor}`}</p>
           <button id="new-quote" onClick={() => this.selectQuote()}>New Quote</button>
         </div>
       </div>
