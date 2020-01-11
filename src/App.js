@@ -20,10 +20,10 @@ const getNamesFromPage = async (pageId) => {
   const names = data.query.pages[actualPageId].links.map(link => link.title);
   return names;
 };
-const getQuote = async name => {
+const getPageData = async name => {
   const response = await fetch(`https://en.wikiquote.org/w/api.php?action=parse&format=json&origin=*&page=${name}&prop=text&section=1&disablelimitreport=1&disabletoc=1`);
   const data = await response.json();
-  return data.parse.text['*'];
+  return data;
 };
 const createElement = htmlString => {
   const element = document.createElement('div');
@@ -50,20 +50,30 @@ class App extends Component {
   async componentDidMount() {
     const pageIds = await getPageIds(wikipediaApi, 'List of Nobel laureates');
     const unfilteredNames = await getNamesFromPage(pageIds);
-    const names = unfilteredNames.filter(name => name.indexOf('Nobel') < 0 );
-    const randomName = names[randomNum(names.length - 1)];
-    const quote = await getQuote(randomName)
-    console.log(quote)
-    // this.setState({
-    //   currentAuthor: randomName,
-    //   currentQuote: quote,
-    //   names: [{ id: randomId, names: names }]
-    // })
-  }
-  selectQuote = () => {
-    const newQuote = this.state.quotes[randomNum(this.state.quotes.length - 1)];
+    const names = unfilteredNames.filter(name => name.indexOf('Nobel') < 0);
+    const pageData = await this.requestPageDataMultipleTimes(names,5); 
+    const element = createElement(pageData.parse.text['*']);
+    const quote = parseElement(element);
+    const currentAuthor = pageData.parse.title;
+    const currentId = pageData.parse.pageid;
+    console.log(currentAuthor)
     this.setState({
-      currentQuote: newQuote
+      currentAuthor: currentAuthor,
+      currentQuote: quote,
+      names: names
+    })
+  }
+  selectQuote = async() => {
+    const { names } = this.state
+    const pageData = await this.requestPageDataMultipleTimes(names,10); 
+    const newQuote = this.state.names[randomNum(this.state.quotes.length - 1)];
+    const element = createElement(pageData.parse.text['*']);
+    const quote = parseElement(element);
+    const currentAuthor = pageData.parse.title;
+    const currentId = pageData.parse.pageid;
+    this.setState({
+      currentAuthor: currentAuthor,
+      currentQuote: quote
     });
   }
   tweetQuote = (quote) => {
@@ -72,6 +82,22 @@ class App extends Component {
     // return (
     //   <a href={`https://twitter.com/intent/tweet?text=`} id="tweet-quote" >Tweet</a>
     // )
+  }
+  requestPageDataMultipleTimes = async(names,attempts) => {
+    // PAGE DATA FOR NAME REQUESTED IS NOT ALWAYS THERE
+    let pageData;
+    let randomName;
+    for (let i = 0; i < attempts; i++) {
+      randomName = names[randomNum(names.length - 1)];
+      pageData = await getPageData(randomName);
+      if(pageData.parse){
+        break
+      }
+    }
+    return pageData;
+  }
+  getNextQuote = () => {
+    console.log(this.state)
   }
   render() {
     const { currentQuote, currentAuthor } = this.state;
