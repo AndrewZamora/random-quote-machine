@@ -15,7 +15,7 @@ const getPageIds = async (api, title) => {
 const getNamesFromPage = async (pageId) => {
   const response = await fetch(`https://en.wikipedia.org/w/api.php?action=query&format=json&origin=*&prop=links&pageids=${pageId}&redirects=1&pllimit=max`);
   const data = await response.json();
-  // // Wanted to use data.query.pages[pageId].links but the object's page id returned from API doesn't always match
+  // Wanted to use data.query.pages[pageId].links but the object's page id returned from API doesn't always match
   const actualPageId = Object.keys(data.query.pages);
   const names = data.query.pages[actualPageId].links.map(link => link.title);
   return names;
@@ -31,7 +31,12 @@ const createElement = htmlString => {
   return element;
 }
 const parseElement = element => {
-  return element.querySelector('ul').querySelector('li').childNodes[0].textContent;
+  const li = element.querySelector('ul').querySelector('li');
+  const ul = li.querySelector('ul');
+  if(ul) {
+    ul .remove();
+  }
+  return li.textContent;
 };
 const randomNum = limit => {
   return Math.floor((Math.random() * limit));
