@@ -47,7 +47,8 @@ class App extends Component {
     super(props);
     this.state = {
       quotes: [],
-      currentQuote: []
+      currentQuote: [],
+      twitterUrl: ""
     };
     this.textRef = React.createRef();
     this.authorRef = React.createRef();
@@ -61,10 +62,11 @@ class App extends Component {
     const quote = parseElement(element);
     const currentAuthor = pageData.parse.title;
     const currentId = pageData.parse.pageid;
-    console.log(currentAuthor)
+    const twitterUrl = `https://twitter.com/intent/tweet?text=${quote.split(' ').join('%20')}`;
     this.setState({
       currentAuthor: currentAuthor,
       currentQuote: quote,
+      twitterUrl: twitterUrl,
       names: names
     })
   }
@@ -76,17 +78,15 @@ class App extends Component {
     const quote = parseElement(element);
     const currentAuthor = pageData.parse.title;
     const currentId = pageData.parse.pageid;
+    const twitterUrl = `https://twitter.com/intent/tweet?text=${quote.split(' ').join('%20')}`;
     this.setState({
       currentAuthor: currentAuthor,
-      currentQuote: quote
+      currentQuote: quote,
+      twitterUrl: twitterUrl
     });
   }
   tweetQuote = (quote) => {
-    console.log(quote.current !== null ? quote.current.textContent : "loading")
-    console.log(quote)
-    // return (
-    //   <a href={`https://twitter.com/intent/tweet?text=`} id="tweet-quote" >Tweet</a>
-    // )
+    return `https://twitter.com/intent/tweet?text=${quote}`;
   }
   requestPageDataMultipleTimes = async(names,attempts) => {
     // PAGE DATA FOR NAME REQUESTED IS NOT ALWAYS THERE
@@ -105,14 +105,15 @@ class App extends Component {
     console.log(this.state)
   }
   render() {
-    const { currentQuote, currentAuthor } = this.state;
+    // const { currentQuote, currentAuthor,twitterUrl } = this.state;
     return (
       <div className="App">
         <h1>Random Quote Machine</h1>
         <div id="quote-box">
-          <p>{currentQuote}</p>
-          <p>{`- ${currentAuthor}`}</p>
-          <button id="new-quote" onClick={() => this.selectQuote()}>New Quote</button>
+          {/* <p id="text">{currentQuote}</p>
+          <p id="author">{`- ${currentAuthor}`}</p>
+          <button id="new-quote" onClick={() => this.selectQuote()}>New Quote</button> */}
+        {this.state.currentQuote.length > 0 && <a href={`https://twitter.com/intent/tweet?text=${this.state.currentQuote}`} id="tweet-quote">Tweet</a>}
         </div>
       </div>
     )
