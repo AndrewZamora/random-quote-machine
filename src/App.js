@@ -33,8 +33,8 @@ const createElement = htmlString => {
 const parseElement = element => {
   const li = element.querySelector('ul').querySelector('li');
   const ul = li.querySelector('ul');
-  if(ul) {
-    ul .remove();
+  if (ul) {
+    ul.remove();
   }
   return li.textContent;
 };
@@ -47,73 +47,61 @@ class App extends Component {
     super(props);
     this.state = {
       quotes: [],
-      currentQuote: [],
-      twitterUrl: ""
+      currentQuote: []
     };
-    this.textRef = React.createRef();
-    this.authorRef = React.createRef();
   }
   async componentDidMount() {
     const pageIds = await getPageIds(wikipediaApi, 'List of Nobel laureates');
     const unfilteredNames = await getNamesFromPage(pageIds);
     const names = unfilteredNames.filter(name => name.indexOf('Nobel') < 0);
-    const pageData = await this.requestPageDataMultipleTimes(names,5); 
+    const pageData = await this.requestPageDataMultipleTimes(names, 5);
     const element = createElement(pageData.parse.text['*']);
     const quote = parseElement(element);
     const currentAuthor = pageData.parse.title;
-    const currentId = pageData.parse.pageid;
-    const twitterUrl = `https://twitter.com/intent/tweet?text=${quote.split(' ').join('%20')}`;
     this.setState({
       currentAuthor: currentAuthor,
       currentQuote: quote,
-      twitterUrl: twitterUrl,
       names: names
     })
   }
-  selectQuote = async() => {
+  selectQuote = async () => {
     const { names } = this.state
-    const pageData = await this.requestPageDataMultipleTimes(names,10); 
+    const pageData = await this.requestPageDataMultipleTimes(names, 10);
     const newQuote = this.state.names[randomNum(this.state.quotes.length - 1)];
     const element = createElement(pageData.parse.text['*']);
     const quote = parseElement(element);
     const currentAuthor = pageData.parse.title;
-    const currentId = pageData.parse.pageid;
-    const twitterUrl = `https://twitter.com/intent/tweet?text=${quote.split(' ').join('%20')}`;
     this.setState({
       currentAuthor: currentAuthor,
-      currentQuote: quote,
-      twitterUrl: twitterUrl
+      currentQuote: quote
     });
   }
-  tweetQuote = (quote) => {
+  tweetQuote = quote => {
     return `https://twitter.com/intent/tweet?text=${quote}`;
   }
-  requestPageDataMultipleTimes = async(names,attempts) => {
+  requestPageDataMultipleTimes = async (names, attempts) => {
     // PAGE DATA FOR NAME REQUESTED IS NOT ALWAYS THERE
     let pageData;
     let randomName;
     for (let i = 0; i < attempts; i++) {
       randomName = names[randomNum(names.length - 1)];
       pageData = await getPageData(randomName);
-      if(pageData.parse){
+      if (pageData.parse) {
         break
       }
     }
     return pageData;
   }
-  getNextQuote = () => {
-    console.log(this.state)
-  }
   render() {
-    // const { currentQuote, currentAuthor,twitterUrl } = this.state;
+    const { currentQuote, currentAuthor } = this.state;
     return (
       <div className="App">
         <h1>Random Quote Machine</h1>
         <div id="quote-box">
-          {/* <p id="text">{currentQuote}</p>
+          <p id="text">{currentQuote}</p>
           <p id="author">{`- ${currentAuthor}`}</p>
-          <button id="new-quote" onClick={() => this.selectQuote()}>New Quote</button> */}
-        {this.state.currentQuote.length > 0 && <a href={`https://twitter.com/intent/tweet?text=${this.state.currentQuote}`} id="tweet-quote">Tweet</a>}
+          <button id="new-quote" onClick={() => this.selectQuote()}>New Quote</button>
+          <a href={this.tweetQuote(currentQuote)} id="tweet-quote">Tweet</a>
         </div>
       </div>
     )
