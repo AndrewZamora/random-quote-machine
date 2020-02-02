@@ -1,5 +1,6 @@
 import React, { Component } from 'react'
 import './App.css';
+import twitterIcon from "./twitter-icon.svg"
 // https://www.mediawiki.org/wiki/API:Main_page
 // https://www.mediawiki.org/wiki/API:Tutorial
 
@@ -95,14 +96,24 @@ class App extends Component {
   render() {
     const { currentQuote, currentAuthor } = this.state;
     return (
-      <div className="App">
-        <h1>Random Quote Machine</h1>
-        <div id="quote-box">
-          <p id="text">{currentQuote}</p>
-          <p id="author">{`- ${currentAuthor}`}</p>
-          <button id="new-quote" onClick={() => this.selectQuote()}>New Quote</button>
-          <a href={this.tweetQuote(currentQuote)} id="tweet-quote">Tweet</a>
-        </div>
+      <div className="App container">
+        <main>
+          {currentQuote.length > 0 ?
+            (<div id="quote-box">
+              <p id="text">{currentQuote}</p>
+              <p id="author">{`- ${currentAuthor}`}</p>
+              <div className="button-container">
+                <button id="new-quote" className="btn btn-secondary" onClick={() => this.selectQuote()}>New Quote</button>
+                <a href={this.tweetQuote(currentQuote)} id="tweet-quote"><img src={twitterIcon} alt="twitter-icon"/></a>
+              </div>
+            </div>)
+            :
+            (<div className="spinner-container">
+              <div className="spinner spinner-grow text-primary" role="status">
+                <span className="sr-only">Loading...</span>
+              </div>
+            </div>)}
+        </main>
       </div>
     )
   }
