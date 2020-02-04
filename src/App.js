@@ -68,7 +68,6 @@ class App extends Component {
   selectQuote = async () => {
     const { names } = this.state
     const pageData = await this.requestPageDataMultipleTimes(names, 10);
-    const newQuote = this.state.names[randomNum(this.state.quotes.length - 1)];
     const element = createElement(pageData.parse.text['*']);
     const quote = parseElement(element);
     const currentAuthor = pageData.parse.title;
@@ -77,8 +76,8 @@ class App extends Component {
       currentQuote: quote
     });
   }
-  tweetQuote = quote => {
-    return `https://twitter.com/intent/tweet?text=${quote}`;
+  tweetQuote = (quote,author) => {
+    return `https://twitter.com/intent/tweet?text=${quote}<br>${author}`;
   }
   requestPageDataMultipleTimes = async (names, attempts) => {
     // PAGE DATA FOR NAME REQUESTED IS NOT ALWAYS THERE
@@ -104,7 +103,7 @@ class App extends Component {
               <p id="author">{`- ${currentAuthor}`}</p>
               <div className="button-container">
                 <button id="new-quote" className="btn btn-secondary" onClick={() => this.selectQuote()}>New Quote</button>
-                <a href={this.tweetQuote(currentQuote)} id="tweet-quote"><img src={twitterIcon} alt="twitter-icon"/></a>
+                <a href={this.tweetQuote(currentQuote,currentAuthor)} id="tweet-quote"><img src={twitterIcon} alt="twitter-icon" /></a>
               </div>
             </div>)
             :
