@@ -77,7 +77,8 @@ class App extends Component {
     });
   }
   tweetQuote = (quote,author) => {
-    return `https://twitter.com/intent/tweet?text=${quote}<br>${author}`;
+    const authorWithNoSpaces = author.split(" ").join("");
+    return `https://twitter.com/intent/tweet?text=${quote} &hashtags=${authorWithNoSpaces}`;
   }
   requestPageDataMultipleTimes = async (names, attempts) => {
     // PAGE DATA FOR NAME REQUESTED IS NOT ALWAYS THERE
