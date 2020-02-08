@@ -52,6 +52,7 @@ class App extends Component {
     };
   }
   async componentDidMount() {
+    // Getting quotes from any person on wiki was a bit problematic so I limited quotes to Nobel laureates
     const pageIds = await getPageIds(wikipediaApi, 'List of Nobel laureates');
     const unfilteredNames = await getNamesFromPage(pageIds);
     const names = unfilteredNames.filter(name => name.indexOf('Nobel') < 0);
