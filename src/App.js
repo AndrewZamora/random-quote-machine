@@ -57,6 +57,10 @@ class App extends Component {
     const unfilteredNames = await getNamesFromPage(pageIds);
     const names = unfilteredNames.filter(name => name.indexOf('Nobel') < 0);
     const pageData = await this.requestPageDataMultipleTimes(names, 5);
+    if(pageData.error) {
+      await this.handleError();
+      return
+    }
     const element = createElement(pageData.parse.text['*']);
     const quote = parseElement(element);
     const currentAuthor = pageData.parse.title;
@@ -69,6 +73,10 @@ class App extends Component {
   selectQuote = async () => {
     const { names } = this.state
     const pageData = await this.requestPageDataMultipleTimes(names, 10);
+    if(pageData.error) {
+      await this.handleError();
+      return
+    }
     const element = createElement(pageData.parse.text['*']);
     const quote = parseElement(element);
     const currentAuthor = pageData.parse.title;
@@ -94,6 +102,12 @@ class App extends Component {
     }
     return pageData;
   }
+  handleError= async()=> {
+    return this.setState({
+      currentAuthor: "Gabriel García Márquez",
+      currentQuote: "He who awaits much can expect little."
+    });
+  }
   render() {
     const { currentQuote, currentAuthor } = this.state;
     return (
@@ -101,7 +115,9 @@ class App extends Component {
         <main>
           {currentQuote.length > 0 ?
             (<div id="quote-box">
-              <p id="text">{currentQuote}</p>
+            <div id="text-box">
+            <p id="text">{currentQuote}</p>
+            </div>
               <p id="author">{`- ${currentAuthor}`}</p>
               <div className="button-container">
                 <button id="new-quote" className="btn btn-secondary" onClick={() => this.selectQuote()}>New Quote</button>
